@@ -1,0 +1,20 @@
+# dsdoc configuration. This is the only file you edit by hand.
+
+scope:                          # dsdoc reads only these files
+  python: [src/model_code]      # *.py, recursively
+  sql: [src/data, src/sql]      # *.sql, recursively
+
+output_dir: docs                # lean_canvas.md, model_card.md and stake_summary.md go here
+
+context:
+  lean_canvas_pdf: ""           # path to the lean canvas PDF; dsdoc-canvas turns it into <output_dir>/lean_canvas.md. Leave empty if there is no canvas.
+
+model:                          # what the code can't tell. Empty fields become TODO.
+  name: ""
+  owner: ""
+  contact: ""
+  main_metric: ""               # the headline metric for the stakeholder summary, a key from metrics below
+  metrics:                      # evaluation values, copied as they are. Per brand: nest them under the brand name.
+    {}                          # example: ndcg_k_10: 0.82
+  evaluated_on: ""              # date of the data extract the model was trained on; the data is then split into train, valid and test, and the metrics above are computed on that split
+  limitations: []

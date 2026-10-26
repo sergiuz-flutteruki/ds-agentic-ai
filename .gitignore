@@ -1,0 +1,6 @@
+courses/
+leancanvas/
+/agent-*.md
+__pycache__/
+.DS_Store
+/copy-claude.sh
