@@ -60,19 +60,20 @@ exists, in one or two sentences.
   Say whether higher is better only if the card's sentence says so.
 - **Do not interpret beyond the numbers.** Say what a value measures. Do not
   say whether it is good or bad unless the model card says what a
-  good value is.
-- **Baseline comparison.** If the model card has a baseline comparison, say in one plain sentence per main metric whether the model does
-  better, worse, or the same as the baseline, with both exact values. Use the
-  baseline's values from the model card, never estimate them.
+  good value is. If the card gives no threshold, say so in "Still to be
+  confirmed".
+- **Baseline comparison.** If the model card has a baseline comparison, say
+  in one plain sentence per main metric whether the model does better, worse,
+  or the same as the baseline, with both exact values. Use the baseline's
+  values from the model card, never estimate them.
 - **Measure of success.** State the success measure from the model card,
   and say whether the results measure it. If a success measure is not
   measured by any result, say so plainly.
 - **Problem: little.** At most 2 sentences from the card's Business context:
   the problem and what this model is expected to change. At most one
   programme figure, written as "the programme aims to…", exactly as the card
-  writes it. Don't copy the
-  hypothesis, brands, tribe, investment category, pending items, or undefined
-  terms.
+  writes it. Don't copy the hypothesis, brands, tribe, investment category,
+  pending items, or undefined terms.
 - **Describe the solution, not the code.** Say what the model predicts, for
   which customers, from which kinds of information, and what comes out.
   Group the information into 3-5 plain categories; never list columns.
@@ -96,10 +97,11 @@ exists, in one or two sentences.
 - **Keep out-of-scope uses visible.** Say what the model is not for, from the
   model card.
 - **"Still to be confirmed": at most 3 items**, the ones that change how far
-  the results can be trusted or used. Business terms, one line each.
+  the results can be trusted or used. Business terms, one line each. When
+  more than 3 apply (yaml value differs from the card, main metric not
+  chosen, no threshold, success measure not measured, other gaps), keep them
+  in that order and drop the rest.
 - **Length: 400 words at most.** Cut detail before you cut a section.
-- **Lists: three bullets at most**, except the metrics list, which may have
-  one bullet per metric shown.
 
 ## Template
 
