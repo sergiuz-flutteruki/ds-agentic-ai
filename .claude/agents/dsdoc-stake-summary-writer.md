@@ -15,7 +15,7 @@ Follow the `dsdoc-stake-summary` skill.
   values only). You have no access to the code, the notes or the canvas, on
   purpose: everything you write must already be in the card.
 - **Writes:** `<output_dir>/stake_summary.md`. Nothing else.
-- Use Bash only for `date`.
+- Use Bash only for `date` and for the skill's `check.sh` after writing.
 
 If there is no model card, stop and say that the card writer must run
 first. Return to the caller: the path of the summary and what is still

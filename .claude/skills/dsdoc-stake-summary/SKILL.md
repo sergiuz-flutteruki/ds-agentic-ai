@@ -81,8 +81,26 @@ exists, in one or two sentences.
   Never present programme figures as what this model
   achieved.
 - **Don't hide gaps.** If results are missing, write "To be completed".
-- **Plain language.** No: feature, target, preprocessing, train/test split,
-  algorithm names. Use: "information", "what the model predicts", "score".
+- **Plain language.** Write only words a manager without a data or IT
+  background would use in a business meeting. Replace any other term with
+  plain words, or leave it out. Never copy a name the card writes as code
+  (in backticks): columns, tables, functions, metric keys. Examples:
+
+  | Don't write | Write instead |
+  |---|---|
+  | feature, column, variable | information, signal |
+  | target, label | what the model predicts |
+  | training set, holdout, train/test split | data used to build the model / data kept aside to check it |
+  | algorithm names (XGBoost, ALS, regression...) | "the model" |
+  | pipeline, inference, table, query | "each run", "the results" |
+  | baseline | "the current approach" or "a simple comparison" (as the card describes it) |
+  | ranking, top-k | ordering, "the best N" |
+
+  Metric code names (AUC, NDCG, MAP, precision@k, recall@k, RMSE, F1...) are
+  not written as the metric's name. Use the plain name first; a code name may
+  appear once, in brackets, only if the card itself uses it as the metric's
+  name. Acronyms and internal terms not defined in the card are omitted.
+  "Information", "what the model predicts" and "score" are the preferred words.
 - **Write for a general reader** with no technical background. There is one
   summary, not one per audience.
 - **Variants.** If the model card has a Variants section, say once that the
@@ -102,6 +120,20 @@ exists, in one or two sentences.
   chosen, no threshold, success measure not measured, other gaps), keep them
   in that order and drop the rest.
 - **Length: 400 words at most.** Cut detail before you cut a section.
+
+## Check before you finish
+
+After writing `stake_summary.md`, run with Bash:
+
+`bash .claude/skills/dsdoc-stake-summary/check.sh <output_dir>/stake_summary.md <output_dir>/model_card.md`
+
+It checks banned technical terms, code names copied from the card, and the
+400-word limit. Fix the file and rerun until it prints `PASS`. A banned-term
+hit that is part of a brand, product or card-defined metric name may stay,
+as the rule on metric code names permits. Cut detail before cutting a
+section.
+
+Report in your final message any hit you kept on purpose, and why.
 
 ## Template
 
