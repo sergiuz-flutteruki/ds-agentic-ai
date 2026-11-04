@@ -4,3 +4,5 @@ leancanvas/
 __pycache__/
 .DS_Store
 /copy-claude.sh
+eval/results/
+eval2
