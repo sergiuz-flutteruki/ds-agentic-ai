@@ -1,0 +1,19 @@
+# Weights of each check in the score of one test (0..1). Judge ids are skill/judge.
+# static: the share of the script checks that pass. check_sensitive is a gate, not a weight:
+# a failing output scores 0 whatever the rest says (scoring/metrics.py).
+static: 1
+judges:
+  code_doc/hallucination: 1
+  code_doc/return_exceptions: 1
+  code_doc/planted_error_fixed: 1
+  business_context/recall: 2
+  business_context/precision: 2
+  business_context/source_correct: 1
+  business_context/conflicts: 1
+  model_card/claim_support: 2
+  model_card/conflicts: 1
+  model_card/limitations_specific: 1
+  stake_summary/fidelity: 2
+  stake_summary/critical_facts: 2
+  stake_summary/comprehension_grade: 2
+  stake_summary/business_link: 1

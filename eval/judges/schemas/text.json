@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "text",
+  "description": "Free answers to fixed questions, given only from the document.",
+  "type": "object",
+  "required": ["answers"],
+  "additionalProperties": false,
+  "properties": {
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["question", "answer"],
+        "additionalProperties": false,
+        "properties": {
+          "question": {"type": "string"},
+          "answer": {"type": "string"}
+        }
+      }
+    }
+  }
+}

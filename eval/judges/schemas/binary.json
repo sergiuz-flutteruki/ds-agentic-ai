@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "binary",
+  "description": "A yes/no question. The justification comes before the answer.",
+  "type": "object",
+  "required": ["justification", "answer"],
+  "additionalProperties": false,
+  "properties": {
+    "justification": {"type": "string"},
+    "answer": {"type": "boolean"}
+  }
+}

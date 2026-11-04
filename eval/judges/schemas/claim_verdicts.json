@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "claim_verdicts",
+  "description": "Each claim gets its evidence before its verdict.",
+  "type": "object",
+  "required": ["claims"],
+  "additionalProperties": false,
+  "properties": {
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "evidence", "verdict"],
+        "additionalProperties": false,
+        "properties": {
+          "claim": {"type": "string"},
+          "evidence": {"type": "string", "description": "Quote from the source that supports or contradicts the claim, or empty."},
+          "verdict": {"enum": ["supported", "unsupported", "contradicted"]}
+        }
+      }
+    }
+  }
+}

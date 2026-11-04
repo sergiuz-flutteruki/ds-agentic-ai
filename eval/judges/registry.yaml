@@ -1,0 +1,72 @@
+# Which judges run on which skill, with which prompt, schema and inputs.
+# Input sources: output = the writer's document; input = the frozen sources of the case;
+# reference.<key> = a field of the case's reference.json (never shown to the agent).
+# Plan: eval-plan.md, section 8.
+
+code_doc:
+  - judge: hallucination
+    prompt: prompts/code_doc/hallucination.md
+    schema: schemas/claim_verdicts.json
+    inputs: {docstrings: output, code: input}
+  - judge: return_exceptions
+    prompt: prompts/code_doc/return_exceptions.md
+    schema: schemas/match.json
+    inputs: {docstrings: output, signatures: reference.signatures}
+  - judge: planted_error_fixed
+    prompt: prompts/code_doc/planted_error_fixed.md
+    schema: schemas/binary.json
+    inputs: {docstrings: output, planted_error: reference.planted_error}
+
+business_context:
+  - judge: recall
+    prompt: prompts/business_context/recall.md
+    schema: schemas/match.json
+    inputs: {document: output, facts: reference.facts}
+  - judge: precision
+    prompt: prompts/business_context/precision.md
+    schema: schemas/claim_verdicts.json
+    inputs: {document: output, sources: input}
+  - judge: source_correct
+    prompt: prompts/business_context/source_correct.md
+    schema: schemas/match.json
+    inputs: {document: output, cited_facts: reference.cited_facts, sources: input}
+  - judge: conflicts
+    prompt: prompts/business_context/conflicts.md
+    schema: schemas/match.json
+    inputs: {document: output, conflicts: reference.conflicts}
+
+model_card:
+  - judge: claim_support
+    prompt: prompts/model_card/claim_support.md
+    schema: schemas/claim_verdicts.json
+    inputs: {card: output, code: input, context: reference.context}
+  - judge: conflicts
+    prompt: prompts/model_card/conflicts.md
+    schema: schemas/match.json
+    inputs: {card: output, planted_conflicts: reference.planted_conflicts}
+  - judge: limitations_specific
+    prompt: prompts/model_card/limitations_specific.md
+    schema: schemas/match.json
+    inputs: {card: output, known_limitations: reference.known_limitations}
+
+stake_summary:
+  - judge: fidelity
+    prompt: prompts/stake_summary/fidelity.md
+    schema: schemas/claim_verdicts.json
+    inputs: {summary: output, model_card: input}
+  - judge: critical_facts
+    prompt: prompts/stake_summary/critical_facts.md
+    schema: schemas/match.json
+    inputs: {summary: output, critical_facts: reference.critical_facts}
+  - judge: comprehension_answer
+    prompt: prompts/stake_summary/comprehension_answer.md
+    schema: schemas/text.json
+    inputs: {summary: output, questions: reference.questions}
+  - judge: comprehension_grade
+    prompt: prompts/stake_summary/comprehension_grade.md
+    schema: schemas/match.json
+    inputs: {answers: judge:comprehension_answer, expected: reference.answers}
+  - judge: business_link
+    prompt: prompts/stake_summary/business_link.md
+    schema: schemas/binary.json
+    inputs: {summary: output, business_metrics: reference.business_metrics}

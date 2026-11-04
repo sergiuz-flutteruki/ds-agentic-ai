@@ -1,0 +1,25 @@
+# Configuration of the dsdoc evaluation. Paths are relative to eval/.
+claude_dir: ../.claude            # the .claude/ folder that is copied into each sandbox
+agent:
+  # Writer runs: the command gets the task as its last argument; cwd is the sandbox.
+  # TODO(owner): confirm the flags of `claude -p` used for writer runs.
+  command: ["claude", "-p"]
+  timeout_seconds: 1800
+judge:
+  model: claude-sonnet-5-5        # must differ from the agent's model
+  temperature: 0
+  max_tokens: 2000
+  retries: 1                      # one retry when the JSON does not match the schema
+runs_per_test: 3
+regression_threshold: 0.05      # smallest drop in mean score that counts as a regression (--compare)
+# Prices for `run_eval.py --estimate`. Owner fills them in, in the unit of the bill. null = no cost shown.
+estimate:
+  agent_cost_per_run: null        # TODO(owner): one writer run (model and length of the output)
+  judge_cost_per_call: null       # TODO(owner): one judge call (judge model)
+human_review_sample: 0.1
+calibration_targets:
+  human_human_agreement: 0.85
+  judge_human_agreement: 0.85
+  planted_error_recall: 0.90
+  precision: 0.85
+  judge_consistency: 0.90         # share of cases with the same verdict in every repeat

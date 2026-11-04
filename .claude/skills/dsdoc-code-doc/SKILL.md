@@ -17,7 +17,7 @@ refactoring, no renaming, no fixes, even if you spot a problem.
   `src/sql`.
 - **Stay in scope.** Only `*.py` under `scope.python` and `*.sql` under
   `scope.sql`. Nothing else in the repo, not even for context. Not the
-  lean canvas either: comments describe the code, not the business intent.
+  business context either: comments describe the code, not the business intent.
 - **Never invent.** Every fact comes from the code (`file:line`) or from
   `dsdoc.yaml`. Anything else is `TODO(owner): <specific question>`.
 
@@ -34,11 +34,7 @@ refactoring, no renaming, no fixes, even if you spot a problem.
       mkdir -p "$(dirname /tmp/dsdoc/<rel>)" && cp <rel> /tmp/dsdoc/<rel>.orig
       ```
    2. Add the documentation (see below).
-   3. Check the logic is unchanged:
-      ```bash
-      python .claude/skills/dsdoc-code-doc/scripts/check_unchanged.py /tmp/dsdoc/<rel>.orig <rel>
-      ```
-      If it fails, restore the backup and report the file.
+   3. **Reflect before you finish** (below) for that file.
 
 ## Python
 
@@ -93,4 +89,39 @@ with grep:
 
 Never write an assumption as a fact.
 
-At the end, list the files changed and every `NOTE` / `TODO(owner)` added.
+## Reflection before you finish
+
+Self-reflection only: your own checks on your own work. This skill has no
+reviewer.
+
+### Mode
+
+Not used yet: the script check always runs, and there is no self-critique.
+
+### 1. Script check (always)
+
+For every edited file, run with Bash:
+
+`python .claude/skills/dsdoc-code-doc/scripts/check_unchanged.py /tmp/dsdoc/<rel>.orig <rel>`
+
+It checks that the Python AST (docstrings removed) or the SQL (comments
+removed, whitespace normalized) is unchanged. If it fails, restore the
+backup and report the file.
+
+### 2. Self-critique
+
+Not yet: there is no `criteria.md` for this skill (planned in
+`agent-todo.md`).
+
+### Stop
+
+One check per file; a failed file is restored, not retried.
+
+## Refine run (started by the dispatcher)
+
+Not applied: no reviewer for this skill.
+
+## At the end
+
+Report: the files changed, every `NOTE` / `TODO(owner)` added, and the
+script check result per file.

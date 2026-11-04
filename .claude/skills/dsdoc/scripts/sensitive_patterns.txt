@@ -1,0 +1,9 @@
+# Sensitive data that must never reach a dsdoc document (problems 1.1 and 7.2).
+# One pattern per line: <name><TAB><extended regex>. Used by check_sensitive.sh and eval/common.py.
+# Names of people in a role (owner, validator) are allowed and are not matched here.
+# Public URLs (e.g. a site the SQL filters on) are allowed; only internal hosts are matched.
+email	[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}
+internal_url	https?://[^ )>]*(atlassian\.net|sharepoint\.com|amazonaws\.com|\.internal|\.corp|\.local)[^ )>]*
+aws_key	AKIA[0-9A-Z]{16}
+password	[Pp]assword *[:=] *[^ ]+
+hostname	\b[a-z0-9-]+\.(internal|local|corp|redshift\.amazonaws\.com)\b

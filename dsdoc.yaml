@@ -4,10 +4,17 @@ scope:                          # dsdoc reads only these files
   python: [src/model_code]      # *.py, recursively
   sql: [src/data, src/sql]      # *.sql, recursively
 
-output_dir: docs                # lean_canvas.md, model_card.md and stake_summary.md go here
+output_dir: docs                # sources/, business_context.md, model_card.md and stake_summary.md go here
 
 context:
-  lean_canvas_pdf: ""           # path to the lean canvas PDF; dsdoc-canvas turns it into <output_dir>/lean_canvas.md. Leave empty if there is no canvas.
+  pdf_inputs: []                # PDFs or images with business context (e.g. the lean canvas); dsdoc-convert turns each into <output_dir>/sources/<name>.md
+  business_docs: []             # Markdown files with business context (e.g. Confluence exports), read as they are
+
+reflection:                     # how each document is checked before delivery: off | self | reviewer | both
+  default: self                 # used by any skill without its own key; self if this block is missing
+  stake_summary: self           # self: the writer critiques its own draft; reviewer: a separate agent reviews it (only via /dsdoc)
+  business_context: self        # off | self | reviewer | both; reviewer only via /dsdoc
+  model_card: self              # off | self | reviewer | both; reviewer only via /dsdoc
 
 model:                          # what the code can't tell. Empty fields become TODO.
   name: ""

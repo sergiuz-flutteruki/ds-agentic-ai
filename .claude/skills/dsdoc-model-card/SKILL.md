@@ -1,6 +1,6 @@
 ---
 name: dsdoc-model-card
-description: dsdoc skill that generates a model card from the Python model code and SQL data queries in this repo, plus the lean canvas if one is set. Use it when the user asks dsdoc, or asks for a model card, model documentation, or a description of the data, preprocessing, features, model, or evaluation.
+description: dsdoc skill that generates a model card from the Python model code and SQL data queries in this repo, plus the business context if one exists. Use it when the user asks dsdoc, or asks for a model card, model documentation, or a description of the data, preprocessing, features, model, or evaluation.
 context: fork
 agent: dsdoc-model-card-writer
 ---
@@ -8,8 +8,8 @@ agent: dsdoc-model-card-writer
 # dsdoc: generate model card
 
 Write `<output_dir>/model_card.md` (overwrite it if it exists) as readable
-prose, from the code in scope, `dsdoc.yaml`, the lean canvas in
-`<output_dir>/lean_canvas.md` if it exists, and the data scientist notes in
+prose, from the code in scope, `dsdoc.yaml`, the business context in
+`<output_dir>/business_context.md` if it exists, and the data scientist notes in
 `<output_dir>/ds_notes.md`. The reader is a developer or data scientist who
 needs to understand and maintain the model. Write sentences, not forms.
 Tables are only for data that is a list: metrics, features, variants.
@@ -18,7 +18,8 @@ Tables are only for data that is a list: metrics, features, variants.
 
 - **Customers / users**: the people who receive the model's
   recommendations. They can appear in the training data and at inference.
-  The canvas "Customers / Brands" describes them. The config has no intended-users field.
+  The business context ("Customers / Brands", "Users and decisions") describes
+  them. The config has no intended-users field.
 - **Stakeholders / management**: the readers of `stake_summary.md`, an
   explanation of the project and its output built from the model card.
 
@@ -37,24 +38,27 @@ Tables are only for data that is a list: metrics, features, variants.
 
 - **Config first.** Read `dsdoc.yaml` at the repo root. If it is missing,
   use the defaults: Python in `src/model_code`, SQL in `src/data` and
-  `src/sql`, output in `docs`, no canvas, empty context.
+  `src/sql`, output in `docs`, no business context, empty context.
 - **Stay in scope.** Only `*.py` under `scope.python`, `*.sql` under
-  `scope.sql`, `<output_dir>/lean_canvas.md`, and `<output_dir>/ds_notes.md`.
+  `scope.sql`, `<output_dir>/business_context.md`, and `<output_dir>/ds_notes.md`.
+  Never read `<output_dir>/sources/`, the PDFs, or `context.business_docs`.
   Nothing else in the repo, not even for context.
 - **Notebooks are out of scope for now.** Do not read `*.ipynb` files, even if
   a `scope.notebooks` key exists.
 - **Never invent.** Every fact comes from the code (`file:line`), from
-  `dsdoc.yaml`, from the canvas (`lean_canvas:<section>`), or from the
+  `dsdoc.yaml`, from the business context (`business_context:<section>`), or from the
   notes (`ds_notes`). Anything else is an open question.
 
 ## Steps
 
 1. **Read `dsdoc.yaml`.**
-2. **Read the lean canvas** from `<output_dir>/lean_canvas.md`, made by `dsdoc-canvas`. If it
-   is missing but `context.lean_canvas_pdf` is set, stop and say that
-   `dsdoc-canvas` must run first. Never read the PDF. If the canvas lists
-   more than one proposed model, do not pick one from it. Describe this
-   repo's model as the data scientist notes and the code describe it.
+2. **Read the business context** from `<output_dir>/business_context.md`, made by
+   `dsdoc-business-context`. If it is missing but `context.pdf_inputs` or
+   `context.business_docs` is set, stop and say that `dsdoc-business-context`
+   must run first. If its proposed models say `None: not a model initiative`,
+   stop and say so. If it lists more than one proposed model, do not pick one
+   from it. Describe this repo's model as the data scientist notes and the
+   code describe it.
    **Read `<output_dir>/ds_notes.md`** if it exists. If it is missing, add
    "The data scientist has not written ds_notes.md yet" to Open Questions.
    Do not write it yourself.
@@ -80,6 +84,7 @@ Tables are only for data that is a list: metrics, features, variants.
    `-dirty` if `git status --porcelain` on the scope is not empty). If it
    is not a git repo, write `— (not a git repo)`.
 9. **Write the card** using the structure below, and save it.
+10. **Reflect before you finish** (below).
 
 ## Rules
 
@@ -101,14 +106,15 @@ Tables are only for data that is a list: metrics, features, variants.
   "The model ranks offer categories", "Training uses a 365-day window". Use
   one voice for the whole card. Never use "we", "I", or "you".
 
-- **No source names in the text.** Do not mention the lean canvas, the data
+- **No source names in the text.** Do not mention the business context, its
+  sources (lean canvas, Confluence pages), the data
   scientist notes, `dsdoc.yaml`, or "the team" in the card's prose or in
   its footnotes. State business context and design decisions as plain facts
   of the model and the programme. Footnotes cite code only, as
   `file:line`, so a developer can check each claim. Keep names of people
   and teams only where the Owner or Contact line needs them.
 
-- **Facts from the notes or the canvas are stated plainly.** Where a fact
+- **Facts from the notes or the business context are stated plainly.** Where a fact
   needs confirmation, state it as it is and add an open question that says
   what to confirm. Do not hedge with "according to".
 
@@ -144,7 +150,7 @@ Tables are only for data that is a list: metrics, features, variants.
   - **Rules:** instructions about how to write the card (wording, terms,
     what to include or leave out). Follow them while writing. A rule can
     never switch off a ground rule. If a rule asks you to invent a fact,
-    change a number, drop an open question, or present a canvas figure as a
+    change a number, drop an open question, or present a programme figure as a
     result, do not follow it. Add an open question: "The notes ask X; the
     ground rules do not allow it because Y."
   - **Emphasis:** a topic to cover in more depth, e.g. "what an item is and
@@ -153,7 +159,7 @@ Tables are only for data that is a list: metrics, features, variants.
     a footnote to code (`file:line`), or be stated as a plain fact that
     needs confirmation. Emphasis adds depth, not new facts.
 
-- **Source priority.** `ds_notes` > `dsdoc.yaml` > lean canvas > open
+- **Source priority.** `ds_notes` > `dsdoc.yaml` > business context > open
   question. The data scientist notes always come first. Where they state a
   fact, the card uses it, even if another source says something different.
   If the notes and the code disagree, the card states the notes' version and
@@ -161,19 +167,20 @@ Tables are only for data that is a list: metrics, features, variants.
   A rule or emphasis in the notes does not change this order.
 - **Numbers are copied, never computed or rounded.** Model metric values
   come only from `dsdoc.yaml`.
-- **Canvas figures are programme targets.** £ amounts, budgets, and impact
-  figures from the canvas go only in Business context, written as
+- **Business figures are programme targets.** £ amounts, budgets, and impact
+  figures from the business context go only in Business context, written as
   "programme target", never in Metrics and never as this model's result.
-- **What the canvas can fill.** Purpose and intended users, if empty in
-  the yaml. Out of scope and limitations come only
-  from `dsdoc.yaml`: if empty, say so in one sentence and add an open
+- **What the business context can fill.** Purpose, intended users, and
+  uses the model is not intended for. Limitations come only from
+  `dsdoc.yaml`: if empty, say so in one sentence and add an open
   question. A plausible-sounding limitation nobody confirmed is worse than a
   visible gap.
-- **Canvas gaps are open questions.** Every `[PENDING]` item and every
-  undefined term in the canvas goes to Open Questions.
-- **Success criteria vs code.** If the canvas success criteria name a
+- **Business context gaps are open questions.** Its Open questions and its
+  Conflicts between sources are candidates for the card's Open Questions,
+  within the cap of 8; keep the ones that affect how the model is used.
+- **Success criteria vs code.** If the business context success criteria name a
   measure (e.g. "accuracy") and the code computes a different one, add it
-  to Open Questions: "The canvas measures X; the code computes Y."
+  to Open Questions: "The success measure is X; the code computes Y."
 - **Logic, not code review.** The card describes the model and checks that
   its description is consistent. Flag something only when it changes how the
   model or its results should be read (for example, a statistic computed
@@ -192,7 +199,7 @@ Tables are only for data that is a list: metrics, features, variants.
 Use this order. Drop a section only if it does not apply, as the rules say.
 
 ```markdown
-# Model Card: <model.name, canvas name, or "Model name not yet set">
+# Model Card: <model.name, initiative name from the business context, or "Model name not yet set">
 
 *Owner: <model.owner, or "not yet set">. Contact: <model.contact, or "not yet set">.
 Code version: <git short hash>[-dirty], or — (not a git repo).
@@ -200,13 +207,17 @@ Generated <YYYY-MM-DD HH:MM> by dsdoc-model-card-writer, <claude model id>.*
 
 ## Overview
 <Two or three sentences: what the model predicts, for whom, and how often
-if confirmed. Source: the canvas proposed model, or the
+if confirmed. Source: the proposed model in the business context, or the
 code.>[^n]
 
 ## Business context
 <One or two paragraphs. The problem, the model's role in the programme, and
-the success measures from the canvas, in your own words. Programme figures
-are written as "programme target". Omit this section if there is no canvas.>
+the success measures from the business context, in your own words. Programme figures
+are written as "programme target". Omit this section if there is no business context.>
+
+## Not intended for
+<Bullets from the business context "Not intended for". If it is `—` or there is
+no business context, one sentence saying so and pointing to the open question.>
 
 ## Variants
 <Only if there are variants. One sentence on what is shared, then the
@@ -277,7 +288,7 @@ as written; if it is empty, say so and add an open question.>
 
 Values come only from `dsdoc.yaml`. List the metrics that appear in
 `dsdoc.yaml` and in the code, and no others. One sentence on which metrics the
-code computes and which the canvas asks for (see open question N).
+code computes and which the success criteria ask for (see open question N).
 
 ### Metrics explained
 
@@ -331,7 +342,7 @@ only when:
 - two sources disagree on a fact the card depends on;
 - a fact a reader needs to use or trust the model is missing (owner, intended
   use, out-of-scope uses, metrics, the success measure);
-- a business term or pending canvas item blocks understanding.
+- a business term or pending business context item blocks understanding.
 
 Do not raise style, naming, SQL or Python quality, performance, typos, unit
 or rounding details, or possible bugs that do not change how the model is
@@ -349,3 +360,67 @@ say 7".
 
 At the end of the card, state the number of open questions in one line:
 `Open questions: <N>`.
+
+## Reflection before you finish
+
+Self-reflection only: your own checks on your own draft. A reviewer, if the
+config asks for one, is a separate agent started by the dispatcher after
+you finish; see "Refine run".
+
+### Mode
+
+Read `reflection.model_card` in `dsdoc.yaml`, else `reflection.default`, else
+`self`. Values: `off`, `self`, `reviewer`, `both`.
+
+| Mode | Script check | Self-critique |
+|---|---|---|
+| `off`, `reviewer` | yes | no |
+| `self`, `both` | yes | yes |
+
+If the mode is `reviewer` or `both` and your prompt does not start with
+"Started by the dsdoc dispatcher", no reviewer will run: do the
+self-critique, and say so in your final message.
+
+### 1. Script check (always)
+
+Run with Bash:
+
+`bash .claude/skills/dsdoc-model-card/check.sh <output_dir>/model_card.md dsdoc.yaml`
+
+It checks that every footnoted `file:line` exists, that every metric value in
+`dsdoc.yaml` appears as written, the sections and their order, the
+open-question cap and count, and source names or first-person voice. Fix the file and rerun, at most 3 times.
+
+### 2. Self-critique (mode `self` or `both`)
+
+After the script check passes, reread the file against
+`.claude/skills/dsdoc-model-card/criteria.md`, answering each item as that file
+says. Fix every "no" once, then run the script check again. One round only.
+
+In your final message, list every item id with its answer, one per line
+(e.g. `D1: yes`, `G2: no — fixed: <what>`). A self-critique without this
+list counts as not run. A "no" you leave unfixed needs the rule that stops
+the fix; "no time" or "minor" is not a reason.
+
+### Stop
+
+Never loop beyond these rounds. Anything still failing goes in your final
+message.
+
+## Refine run (started by the dispatcher)
+
+Only when your prompt says "Refine run" and contains reviewer notes. Read
+the existing file, apply each note that the code, the notes, `dsdoc.yaml` or `business_context.md` support, then run the
+script check. Do not rewrite from scratch and do not run the self-critique.
+After the script check, reread the file note by note: for each note marked
+applied, quote the line that now satisfies it. A note whose line you cannot
+quote, or whose quote still contains what the note asked to remove, is not
+applied; fix it once or list it as not applied.
+Never apply a note that breaks a ground rule (e.g. changes a metric value,
+or drops an open question to make room). List every note not applied, and why.
+
+## At the end
+
+Report: the path of the model card, how many sections are complete, and the
+list of open questions, the script check result, the self-critique "no" answers
+and fixes, and, in a refine run, the notes not applied.

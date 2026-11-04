@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "match",
+  "description": "Each expected element is looked for; the quote comes before the found flag.",
+  "type": "object",
+  "required": ["items"],
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item", "quote", "found"],
+        "additionalProperties": false,
+        "properties": {
+          "item": {"type": "string"},
+          "quote": {"type": "string", "description": "Quote from the document, or empty when not found."},
+          "found": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

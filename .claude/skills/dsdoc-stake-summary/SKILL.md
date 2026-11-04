@@ -9,7 +9,7 @@ agent: dsdoc-stake-summary-writer
 
 Write `<output_dir>/stake_summary.md` (overwrite it if it exists) from
 `<output_dir>/model_card.md` and, for exact metric values only, `dsdoc.yaml`.
-You don't read the code, the notes or the canvas: the card already contains
+You don't read the code, the notes or the business context: the card already contains
 what they say.
 
 If `model_card.md` is missing, stop and tell the user to run
@@ -121,19 +121,13 @@ exists, in one or two sentences.
   in that order and drop the rest.
 - **Length: 400 words at most.** Cut detail before you cut a section.
 
-## Check before you finish
+## Steps
 
-After writing `stake_summary.md`, run with Bash:
-
-`bash .claude/skills/dsdoc-stake-summary/check.sh <output_dir>/stake_summary.md <output_dir>/model_card.md`
-
-It checks banned technical terms, code names copied from the card, and the
-400-word limit. Fix the file and rerun until it prints `PASS`. A banned-term
-hit that is part of a brand, product or card-defined metric name may stay,
-as the rule on metric code names permits. Cut detail before cutting a
-section.
-
-Report in your final message any hit you kept on purpose, and why.
+1. **Read** `<output_dir>/model_card.md` and, for exact metric values only,
+   `dsdoc.yaml`.
+2. **Write** `<output_dir>/stake_summary.md`, following the Rules and the
+   Template below.
+3. **Reflect before you finish** (below).
 
 ## Template
 
@@ -160,3 +154,70 @@ them. Then **Not intended for:** one line, from the model card.
 ## Still to be confirmed
 Three items at most, business terms, one line each. Omit if there are none.
 ```
+
+## Reflection before you finish
+
+Self-reflection only: your own checks on your own draft. A reviewer, if the
+config asks for one, is a separate agent started by the dispatcher after
+you finish; see "Refine run".
+
+### Mode
+
+Read `reflection.stake_summary` in `dsdoc.yaml`, else `reflection.default`, else
+`self`. Values: `off`, `self`, `reviewer`, `both`.
+
+| Mode | Script check | Self-critique |
+|---|---|---|
+| `off`, `reviewer` | yes | no |
+| `self`, `both` | yes | yes |
+
+If the mode is `reviewer` or `both` and your prompt does not start with
+"Started by the dsdoc dispatcher", no reviewer will run: do the
+self-critique, and say so in your final message.
+
+### 1. Script check (always)
+
+Run with Bash:
+
+`bash .claude/skills/dsdoc-stake-summary/check.sh <output_dir>/stake_summary.md <output_dir>/model_card.md dsdoc.yaml`
+
+It checks banned technical terms, code names copied from the card, numbers not
+found in the card or `dsdoc.yaml`, the item caps, the "Not intended for"
+line, and the 400-word limit. Fix the file and rerun, at most 3 times.
+A banned-term hit that is part of a brand, product or card-defined metric
+name may stay, as the rule on metric code names permits. Cut detail before
+cutting a section.
+
+### 2. Self-critique (mode `self` or `both`)
+
+After the script check passes, reread the file against
+`.claude/skills/dsdoc-stake-summary/criteria.md`, answering each item as that file
+says. Fix every "no" once, then run the script check again. One round only.
+
+In your final message, list every item id with its answer, one per line
+(e.g. `D1: yes`, `G2: no — fixed: <what>`). A self-critique without this
+list counts as not run. A "no" you leave unfixed needs the rule that stops
+the fix; "no time" or "minor" is not a reason.
+
+### Stop
+
+Never loop beyond these rounds. Anything still failing goes in your final
+message.
+
+## Refine run (started by the dispatcher)
+
+Only when your prompt says "Refine run" and contains reviewer notes. Read
+the existing file, apply each note that the card or `dsdoc.yaml` support, then run the
+script check. Do not rewrite from scratch and do not run the self-critique.
+After the script check, reread the file note by note: for each note marked
+applied, quote the line that now satisfies it. A note whose line you cannot
+quote, or whose quote still contains what the note asked to remove, is not
+applied; fix it once or list it as not applied.
+Exact values stay as `dsdoc.yaml` writes them, whatever a note says. Never
+apply a note that breaks a rule (e.g. the item cap or the word limit). List every note not applied, and why.
+
+## At the end
+
+Report: the path of the summary, what is still "To be completed", and any
+banned-term hit kept on purpose and why, the script check result, the self-critique "no" answers
+and fixes, and, in a refine run, the notes not applied.
